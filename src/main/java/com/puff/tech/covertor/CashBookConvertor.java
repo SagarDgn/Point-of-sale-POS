@@ -4,13 +4,15 @@ import com.puff.tech.entity.CashBookEntity;
 import com.puff.tech.usecase.cashbook.create.CreateCashBookUseCaseRequest;
 import com.puff.tech.usecase.cashbook.update.UpdateCashBookUseCaseRequest;
 
+import java.io.IOException;
 import java.time.Instant;
+import java.util.Base64;
 
 public class CashBookConvertor {
 
     private CashBookConvertor(){}
 
-    public static CashBookEntity toEntity(CreateCashBookUseCaseRequest req, Long khataBookId, String photoPath) {
+    public static CashBookEntity toEntity(CreateCashBookUseCaseRequest req, Integer khataBookId) {
         CashBookEntity cashBookEntity = new CashBookEntity();
 
         cashBookEntity.setKhataBookId(Math.toIntExact(khataBookId));
@@ -21,15 +23,22 @@ public class CashBookConvertor {
         cashBookEntity.setPaymentMode(req.paymentMode());
         cashBookEntity.setAmount(req.amount());
         cashBookEntity.setRemarks(req.remarks());
-        cashBookEntity.setPhotoPath(photoPath);
+        try {
+            cashBookEntity.setPhotoPath(getImageBase64String(req.photo().getBytes()));
+        }catch (IOException e) {
+            throw new IllegalArgumentException("Cannot converted Image into Byte");
+        }
         cashBookEntity.setCreatedAt(Instant.now());
-
         return cashBookEntity;
     }
 
+    private static String getImageBase64String(byte[] src) {
+        return Base64.getEncoder().encodeToString(src);
+    }
+
+
     public static CashBookEntity updateEntity(CashBookEntity existing,
-                                              UpdateCashBookUseCaseRequest request,
-                                              String photoPath) {
+                                              UpdateCashBookUseCaseRequest request) {
 
         existing.setCashBookNo(request.cashbookNo());
         existing.setDate(request.date());
@@ -38,10 +47,12 @@ public class CashBookConvertor {
         existing.setPaymentMode(request.paymentMode());
         existing.setAmount(request.amount());
         existing.setRemarks(request.remarks());
-
-        if (photoPath != null) {
-            existing.setPhotoPath(photoPath);
+        try {
+            existing.setPhotoPath(getImageBase64String(request.photo().getBytes()));
+        }catch (IOException e) {
+            throw new IllegalArgumentException("Cannot converted Image into Byte");
         }
+
 
 
         return existing;

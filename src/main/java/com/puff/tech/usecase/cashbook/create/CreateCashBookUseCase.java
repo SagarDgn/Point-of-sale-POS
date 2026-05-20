@@ -1,6 +1,5 @@
 package com.puff.tech.usecase.cashbook.create;
 
-import com.puff.tech.core.utils.HelperUtils;
 import com.puff.tech.covertor.CashBookConvertor;
 import com.puff.tech.entity.CashBookEntity;
 import com.puff.tech.repository.CashBookRepository;
@@ -19,19 +18,16 @@ public class CreateCashBookUseCase {
     private final CashBookRepository cashBookRepository;
     private final CategoryRepository categoryRepository;
     private final ItemRepository itemRepository;
-    private final HelperUtils helperUtils;
     private final KhataBookImplementation khataBookImplementation;
 
     @Inject
     public CreateCashBookUseCase(CashBookRepository cashBookRepository,
                                  CategoryRepository categoryRepository,
                                  ItemRepository itemRepository,
-                                 HelperUtils helperUtils,
                                  KhataBookImplementation khataBookImplementation) {
         this.cashBookRepository = cashBookRepository;
         this.categoryRepository = categoryRepository;
         this.itemRepository = itemRepository;
-        this.helperUtils = helperUtils;
         this.khataBookImplementation = khataBookImplementation;
     }
 
@@ -41,22 +37,18 @@ public class CreateCashBookUseCase {
                 .flatMap(khataBookId ->
 
 
-                        itemRepository.findById(Math.toIntExact(request.itemId()))
+                        itemRepository.findById(request.itemId())
                                 .switchIfEmpty(Mono.error(new RuntimeException("Item not found")))
 
 
-                                .then(categoryRepository.findById(Math.toIntExact(request.categoryId())))
-                                .switchIfEmpty(Mono.error(new RuntimeException("Category not found")))
+                                 .flatMap(itemEntity ->
+                                            categoryRepository.findById(request.categoryId())
+                                        .switchIfEmpty(Mono.error(new RuntimeException("Category not found"))))
 
-                                .flatMap(category ->
-                                        (request.photo() != null
-                                                ? Mono.fromCallable(() -> helperUtils.uploadFile(request.photo()))
-                                                : Mono.just((String) null))
-                                )
 
-                                .flatMap(photoPath -> {
+                                .flatMap(category -> {
                                     CashBookEntity cashBook =
-                                            CashBookConvertor.toEntity(request, Long.valueOf(khataBookId), photoPath);
+                                            CashBookConvertor.toEntity(request, khataBookId);
 
                                     return cashBookRepository.save(cashBook);
                                 })

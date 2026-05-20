@@ -19,8 +19,8 @@ public class UpdateKhataBookUseCase  {
         return khataBookRepository.findById(id)
                 .switchIfEmpty(Mono.error(new RuntimeException("Khatabook not found")))
                 .flatMap(khataBookEntity -> {
-                    KhataBookConvertor.toUpdateEntity(request);
-                    return   khataBookRepository.save(khataBookEntity);
+                    KhataBookConvertor.toUpdateEntity(request,khataBookEntity);
+                    return   khataBookRepository.update(khataBookEntity);
 
                 })
                 .map(updatedKhataBook-> new UpdateKhataBookUseCaseResponse("Updated successfully"))

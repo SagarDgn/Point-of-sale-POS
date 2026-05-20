@@ -6,6 +6,9 @@ import com.puff.tech.usecase.khatabook.findall.GetKhataBookUseCaseResponse;
 import com.puff.tech.usecase.khatabook.update.UpdateKhataBookUseCaseRequest;
 import io.micronaut.http.annotation.Get;
 
+import java.io.IOException;
+import java.util.Base64;
+
 
 public class KhataBookConvertor {
     private KhataBookConvertor(){}
@@ -25,9 +28,17 @@ public class KhataBookConvertor {
         khataBookEntity.setTaxVat(request.taxVat());
         khataBookEntity.setBookAccount(String.valueOf(request.bookAccount()));
         khataBookEntity.setKyc(request.kyc());
-        khataBookEntity.setImagePath(request.imagePath());
+        try {
+            khataBookEntity.setImagePath(getImageBase64String(request.imagePath().getBytes()));
+        }catch (Exception e) {
+            throw new IllegalArgumentException("Cannot converted Image into Byte");
+        }
 
         return khataBookEntity;
+    }
+
+    private static String getImageBase64String(byte[] src) {
+        return Base64.getEncoder().encodeToString(src);
     }
 
     public static GetKhataBookUseCaseResponse getAllKhataBook(KhataBookEntity khataBookEntity){
@@ -49,8 +60,8 @@ public class KhataBookConvertor {
         );
     }
 
-    public static KhataBookEntity toUpdateEntity( UpdateKhataBookUseCaseRequest request){
-        KhataBookEntity khataBookEntity= new KhataBookEntity();
+    public static KhataBookEntity toUpdateEntity( UpdateKhataBookUseCaseRequest request,
+                                                  KhataBookEntity khataBookEntity){
         khataBookEntity.setName(request.name());
         khataBookEntity.setNumber(request.number());
         khataBookEntity.setAddress(request.address());
@@ -64,7 +75,12 @@ public class KhataBookConvertor {
         khataBookEntity.setTaxVat(request.taxVat());
         khataBookEntity.setBookAccount(String.valueOf(request.bookAccount()));
         khataBookEntity.setKyc(request.kyc());
-        khataBookEntity.setImagePath(request.imagePath());
+        try {
+            khataBookEntity.setImagePath(getImageBase64String(request.imagePath().getBytes()));
+        }catch (Exception e) {
+            throw new IllegalArgumentException("Cannot converted Image into Byte");
+        }
+
 
         return khataBookEntity;
     }

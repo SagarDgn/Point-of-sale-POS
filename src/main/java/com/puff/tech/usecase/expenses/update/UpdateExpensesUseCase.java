@@ -30,33 +30,14 @@ public class UpdateExpensesUseCase implements UseCase<UpdateExpensesUseCaseReque
 
         return khataBookImplementation.getCurrentKhataBookId()
                 .flatMap(khataBookId ->
-                        repository.findById(request.id())
+                        repository.findByIdAndKhataBookId(request.id(),khataBookId)
                                 .switchIfEmpty(Mono.error(new RuntimeException("Expense not found")))
                                 .flatMap(existing -> {
-
-                                    Mono<String> photoPathMono;
-
-                                    if (request.photo() != null) {
-                                        photoPathMono = Mono.fromCallable(() -> {
-                                            // Delete old photo
-                                            if (existing.getPhotoPath() != null) {
-                                                helperUtils.deleteFile(existing.getPhotoPath());
-                                            }
-                                            // Upload new photo
-                                            return helperUtils.uploadFile(request.photo());
-                                        });
-                                    } else {
-                                        photoPathMono = Mono.justOrEmpty(existing.getPhotoPath());
-                                    }
-
-                                    return photoPathMono.flatMap(photoPath -> {
-                                        // Use converter to map all fields
-                                        ExpensesEntity updated = ExpensesConvertor.toEntityForUpdate(existing, request, photoPath);
-                                        return repository.save(updated)
+                                        ExpensesEntity updated = ExpensesConvertor.toEntityForUpdate(existing, request);
+                                        return repository.update(updated)
                                                 .map(e -> new UpdateExpensesUseCaseResponse("Updated Successfully"));
-                                    });
-
-                                })
+                                    })
                 );
+
     }
 }

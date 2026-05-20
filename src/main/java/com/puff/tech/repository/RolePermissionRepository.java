@@ -12,7 +12,7 @@ import java.util.List;
 @R2dbcRepository(
         dialect = Dialect.POSTGRES
 )
-public interface RolePermissionRepositiry extends ReactorCrudRepository<RolePermissionEntity,Integer> {
+public interface RolePermissionRepository extends ReactorCrudRepository<RolePermissionEntity,Integer> {
 
     Mono<Boolean> existsByRoleIdAndPermissionId(Integer roleId, Integer permissionId);
 

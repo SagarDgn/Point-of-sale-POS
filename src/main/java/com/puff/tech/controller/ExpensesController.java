@@ -47,8 +47,28 @@ public class ExpensesController {
 
     @Post(value = "/expenses", consumes = MediaType.MULTIPART_FORM_DATA)
     public Mono<RestResponse<CreateExpensesUseCaseResponse>> create(
-            @Part CreateExpensesUseCaseRequest request
+
+            @Part("expensesNo") String expensesNo,
+            @Part("date") LocalDate date,
+            @Part("categoryId") Integer categoryId,
+            @Part("itemId") Integer itemId,
+            @Part("paymentMode") String paymentMode,
+            @Part("amount") BigDecimal amount,
+            @Part(value = "remarks") String remarks,
+            @Part(value = "photo") CompletedFileUpload photo
     ) {
+        var request= new CreateExpensesUseCaseRequest(
+
+                expensesNo,
+                date,
+                categoryId,
+                itemId,
+                paymentMode,
+                amount,
+                photo,
+                remarks
+
+        );
         return createExpensesUseCase.execute(request)
                 .map(RestResponse::success)
                 .onErrorResume(err->Mono.just(RestResponse.error("Unexpected happened" +err.getLocalizedMessage())));
@@ -70,7 +90,7 @@ public class ExpensesController {
                 .onErrorResume(err->Mono.just(RestResponse.error("Unexpected happened" +err.getLocalizedMessage())));
 
     }
-    @Put(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA)
+    @Put(value = "/expenses", consumes = MediaType.MULTIPART_FORM_DATA)
     public Mono<RestResponse<UpdateExpensesUseCaseResponse>> update(
             @Part("id") Integer id,
             @Part("expensesNo") String expensesNo,
@@ -100,7 +120,7 @@ public class ExpensesController {
 
     }
 
-    @Delete(value = "/delete/{id}")
+    @Delete(value = "/expenses/{id}")
     public Mono<RestResponse<DeleteExpensesUseCaseResponse>> delete(@PathVariable Integer id) {
         var request = new DeleteExpensesUseCaseRequest(id);
         return deleteExpensesUseCase.execute(request)

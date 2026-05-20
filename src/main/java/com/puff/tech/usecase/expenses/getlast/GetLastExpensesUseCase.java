@@ -22,7 +22,7 @@ public class GetLastExpensesUseCase {
     }
     public Mono<GetAllExpensesBookUseCaseResponse> execute(){
         Integer khataBookId= khataBookImplementation.getCurrentKhataBookId().block();
-        return expensesRepository.findTopByKhataBookIdOrderByCreatedAtDesc(khataBookId)
+        return expensesRepository.findLatestExpense(khataBookId)
                 .map(ExpensesConvertor::response)
                 .onErrorResume(err->Mono.error(new RuntimeException("Unexpected happened" +err.getLocalizedMessage())));
     }

@@ -2,6 +2,8 @@ package com.puff.tech.controller;
 
 import com.puff.tech.core.responses.RestResponse;
 import com.puff.tech.core.utils.HelperUtils;
+import com.puff.tech.domain.BusinessCategory;
+import com.puff.tech.domain.BusinessType;
 import com.puff.tech.usecase.khatabook.create.CreateKhataBookUseCase;
 import com.puff.tech.usecase.khatabook.create.CreateKhataBookUseCaseRequest;
 import com.puff.tech.usecase.khatabook.create.CreateKhataBookUseCaseResponse;
@@ -17,6 +19,7 @@ import com.puff.tech.usecase.khatabook.switchkb.SwitchKhataBookUseCaseResponse;
 import com.puff.tech.usecase.khatabook.update.UpdateKhataBookUseCase;
 import com.puff.tech.usecase.khatabook.update.UpdateKhataBookUseCaseRequest;
 import com.puff.tech.usecase.khatabook.update.UpdateKhataBookUseCaseResponse;
+import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
 import io.micronaut.http.multipart.CompletedFileUpload;
 import jakarta.inject.Inject;
@@ -56,15 +59,41 @@ public class KhataBookController {
         this.updateKhataBookUseCase=updateKhataBookUseCase;
     }
 
-    @Post( value = "/khatabook", consumes = "multipart/form-data")
-    public Mono<RestResponse<CreateKhataBookUseCaseResponse>> create(@Part CreateKhataBookUseCaseRequest request,
-                                                                      @Part(value = "imageFile") CompletedFileUpload imageFile) throws IOException {
+    @Post( value = "/khatabook", consumes = MediaType.MULTIPART_FORM_DATA)
+    public Mono<RestResponse<CreateKhataBookUseCaseResponse>> create(@Part("name") String name,
+                                                                      @Part ("number") String number,
+                                                                      @Part ("address") String address,
+                                                                      @Part("email") String email,
+                                                                      @Part("companyName") String companyName,
+                                                                      @Part("companyNumber") String companyNumber,
+                                                                      @Part("companyAddress") String companyAddress,
+                                                                      @Part("companyEmail") String companyEmail,
+                                                                      @Part("businessCategory") BusinessCategory businessCategory,
+                                                                      @Part("businessType") BusinessType businessType,
+                                                                      @Part("taxVat") boolean taxVat,
+                                                                      @Part("bookAccount") String bookAccount,
+                                                                      @Part("kyc") boolean kyc,
+                                                                      @Part("imagePath") String imagePath
+                                                                      ) throws IOException {
 
-        String imagePath = null;
+        var request= new CreateKhataBookUseCaseRequest(
+                name,
+                number,
+                address,
+                email,
+                companyName,
+                companyNumber,
+                companyAddress,
+                companyEmail,
+                businessCategory,
+                businessType,
+                taxVat,
+                bookAccount,
+                kyc,
+                imagePath
+        );
 
-        if (imageFile != null) {
-            imagePath = helperUtils.uploadFile(imageFile);
-        }
+
         return createKhataBookUseCase.execute(request)
                 .map(RestResponse::success)
                 .onErrorResume(err->Mono.just(RestResponse.error("Unexpected happened"+err.getLocalizedMessage())));
@@ -106,8 +135,37 @@ public class KhataBookController {
     }
 
     @Put("/khatabook/{id}")
-    public Mono<RestResponse<UpdateKhataBookUseCaseResponse>> update(@Body UpdateKhataBookUseCaseRequest request,
+    public Mono<RestResponse<UpdateKhataBookUseCaseResponse>> update(@Part("name") String name,
+                                                                     @Part ("number") String number,
+                                                                     @Part ("address") String address,
+                                                                     @Part("email") String email,
+                                                                     @Part("companyName") String companyName,
+                                                                     @Part("companyNumber") String companyNumber,
+                                                                     @Part("companyAddress") String companyAddress,
+                                                                     @Part("companyEmail") String companyEmail,
+                                                                     @Part("businessCategory") BusinessCategory businessCategory,
+                                                                     @Part("businessType") BusinessType businessType,
+                                                                     @Part("taxVat") boolean taxVat,
+                                                                     @Part("bookAccount") String bookAccount,
+                                                                     @Part("kyc") boolean kyc,
+                                                                     @Part("imagePath") String imagePath,
                                                                      @PathVariable Integer id){
+        var request= new UpdateKhataBookUseCaseRequest(
+                name,
+                number,
+                address,
+                email,
+                companyName,
+                companyNumber,
+                companyAddress,
+                companyEmail,
+                businessCategory,
+                businessType,
+                taxVat,
+                bookAccount,
+                kyc,
+                imagePath
+        );
         return updateKhataBookUseCase.execute(request, id)
                 .map(RestResponse::success)
                 .onErrorResume(err->Mono.just(RestResponse.error("Unexpected happened" +err.getLocalizedMessage())));

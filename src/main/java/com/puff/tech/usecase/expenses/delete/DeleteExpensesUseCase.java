@@ -26,14 +26,9 @@ public class DeleteExpensesUseCase implements UseCase<DeleteExpensesUseCaseReque
     public Mono<DeleteExpensesUseCaseResponse> execute(DeleteExpensesUseCaseRequest request) {
         return khataBookImplementation.getCurrentKhataBookId()
                 .flatMap(khataBookId ->
-                        repository.findById(request.id())
+                        repository.findByIdAndKhataBookId(request.id(),khataBookId)
                                 .switchIfEmpty(Mono.error(new RuntimeException("Expense not found")))
                                 .flatMap(expense -> {
-                                    // Delete photo if exists
-                                    if (expense.getPhotoPath() != null) {
-                                        helperUtils.deleteFile(expense.getPhotoPath());
-                                    }
-                                    // Delete expense
                                     return repository.delete(expense)
                                             .then(Mono.just(new DeleteExpensesUseCaseResponse("Deleted Successfully")));
                                 })

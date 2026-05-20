@@ -22,12 +22,10 @@ public class SalesBillEntity {
     @Id
     @Generated
     private Integer id;
-    // -------- KhataBook Foreign Key --------
     private Integer khataBookId;
     @Relation(Relation.Kind.MANY_TO_ONE)
     private KhataBookEntity khataBook;
 
-    // -------- SalesBill Info --------
     @Size(max = 100)
     private String billNumber;
     private LocalDate billDate;
@@ -37,13 +35,12 @@ public class SalesBillEntity {
     private CustomerEntity customer;
 
     @Size(max = 10)
-    private String paymentMode; // cash, card, upi, bank
+    private String paymentMode;
     private BigDecimal amount;
     private String remarks;
     @Size(max = 255)
     private String photoPath;
 
-    // -------- Timestamps --------
     @DateCreated
     private Instant createdAt;
 

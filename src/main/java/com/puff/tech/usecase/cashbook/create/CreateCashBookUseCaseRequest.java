@@ -12,8 +12,8 @@ import java.time.LocalDate;
 public record CreateCashBookUseCaseRequest(
         @NotNull String cashbookNo,
         @NotNull LocalDate date,
-        @NotNull Long categoryId,
-        @NotNull Long itemId,
+        @NotNull Integer categoryId,
+        @NotNull Integer itemId,
         @NotNull String paymentMode,
         @NotNull BigDecimal amount,
         String remarks,

@@ -13,6 +13,7 @@ import com.puff.tech.usecase.cashbook.delete.DeleteCashBookUseCaseResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
 import io.micronaut.http.multipart.CompletedFileUpload;
+import jakarta.inject.Inject;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
@@ -24,6 +25,7 @@ public class CashBookController {
     private final UpdateCashBookUseCase updateUseCase;
     private final DeleteCashBookUseCase deleteUseCase;
 
+    @Inject
     public CashBookController(CreateCashBookUseCase createUseCase,
                               UpdateCashBookUseCase updateUseCase,
                               DeleteCashBookUseCase deleteUseCase) {
@@ -32,13 +34,13 @@ public class CashBookController {
         this.deleteUseCase = deleteUseCase;
     }
 
-    //  POST: Create Cashbook
+
     @Post( value = "/cashbook", consumes = MediaType.MULTIPART_FORM_DATA)
     public Mono<RestResponse<CreateCashBookUseCaseResponse>> create(
             @Part String cashbookNo,
             @Part String date,
-            @Part Long categoryId,
-            @Part Long itemId,
+            @Part Integer categoryId,
+            @Part Integer itemId,
             @Part String paymentMode,
             @Part Double amount,
             @Part(value = "remarks") String remarks,
@@ -63,7 +65,7 @@ public class CashBookController {
                 ;
     }
 
-    //  PUT: Update Cashbook
+
     @Put(value = "/cashbook/{id}", consumes = MediaType.MULTIPART_FORM_DATA)
     public Mono<RestResponse<UpdateCashBookUseCaseResponse>> update(
             @PathVariable Integer id,
@@ -89,13 +91,13 @@ public class CashBookController {
                         photo
                 );
 
-        return updateUseCase.execute(Long.valueOf(id), request)
+        return updateUseCase.execute(id, request)
                 .map(RestResponse::success)
                 .onErrorResume(err->Mono.just(RestResponse.error("Unexpected happened" +err.getLocalizedMessage())))
                 ;
     }
 
-    //  DELETE: Delete Cashbook
+
     @Delete("/cashbook/{id}")
     public Mono<RestResponse<DeleteCashBookUseCaseResponse>> delete( @PathVariable  Integer id) {
         return deleteUseCase.execute(id)

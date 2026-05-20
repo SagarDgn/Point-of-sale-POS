@@ -30,28 +30,10 @@ public class CreateExpensesUseCase implements UseCase<CreateExpensesUseCaseReque
 
         return khataBookImplementation.getCurrentKhataBookId()
                 .flatMap(khataBookId -> {
-
-                    Mono<String> photoPathMono;
-
-                    if (request.photoPath() != null) {
-                        photoPathMono = Mono.fromCallable(() ->
-                                helperUtils.uploadFile(request.photoPath())
-                        );
-                    } else {
-                        photoPathMono = Mono.justOrEmpty((String) null);
-                    }
-
-                    return photoPathMono.flatMap(photoPath -> {
-
-                        var entity = ExpensesConvertor.toEntity(request, khataBookId,photoPath);
-                        entity.setPhotoPath(photoPath);
-
+                        var entity = ExpensesConvertor.toEntity(request, khataBookId);
                         return expensesRepository.save(entity)
-                                .map(e -> new CreateExpensesUseCaseResponse("Created Successfully"));
+                                .map(e -> new CreateExpensesUseCaseResponse("Created Successfully"))
+                                .onErrorResume(err->Mono.error(new RuntimeException("Failed to create expense: " + err.getMessage())));
                     });
-                })
-                .onErrorResume(err ->
-                        Mono.error(new RuntimeException("Failed to create expense: " + err.getMessage()))
-                );
     }
 }

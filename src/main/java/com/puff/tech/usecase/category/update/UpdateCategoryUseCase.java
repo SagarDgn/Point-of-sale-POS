@@ -31,7 +31,7 @@ public class UpdateCategoryUseCase {
 
                                     CategoryConvertor.toUpdateEntity(existing, request);
 
-                                    return categoryRepository.save(existing);
+                                    return categoryRepository.update(existing);
                                 })
                                 .thenReturn(new UpdateCategoryUseCaseResponse("Updated successfully"))
                 );

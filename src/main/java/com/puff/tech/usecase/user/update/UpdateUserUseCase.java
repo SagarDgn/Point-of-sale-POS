@@ -22,7 +22,7 @@ public class UpdateUserUseCase  {
               .switchIfEmpty(Mono.error(new Throwable("User not found")))
               .flatMap(userEntity -> {
                   UserConvertor.updateRequestToEntity(userEntity,request);
-                  return userRepository.save(userEntity);
+                  return userRepository.update(userEntity);
               })
               .map(updatedUser -> new UpdateUserUseCaseResponse("Updated successfully" ,updatedUser.getId()))
               .onErrorResume(err->Mono.error(new Throwable(err.getLocalizedMessage())));

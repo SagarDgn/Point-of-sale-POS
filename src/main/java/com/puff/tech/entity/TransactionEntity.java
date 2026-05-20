@@ -28,7 +28,6 @@ public class TransactionEntity {
     private Instant transactionDate;
     private String transactionType;
 
-    // -------- Timestamps --------
     @DateCreated
     private Instant createdAt;
 

@@ -54,7 +54,7 @@ public class UserController {
                 .onErrorResume(err-> Mono.just(RestResponse.error("Unexpected on controller" +err.getLocalizedMessage())));
     }
 
-    @Delete("/user/delete/{id}")
+    @Delete("/user/{id}")
     public Mono<RestResponse<DeleteUserUseCaseResponse>> delete(@PathVariable Integer id){
         return deleteUserUseCase.execute(id)
                 .map(RestResponse::success)

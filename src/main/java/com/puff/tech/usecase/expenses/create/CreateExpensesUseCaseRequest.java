@@ -16,7 +16,7 @@ public record CreateExpensesUseCaseRequest(
         Integer itemId,
         String paymentMode,
         BigDecimal amount,
-       CompletedFileUpload photoPath,
+        CompletedFileUpload photoPath,
         String remarks
 )
 implements UseCase.UseCaseRequest {

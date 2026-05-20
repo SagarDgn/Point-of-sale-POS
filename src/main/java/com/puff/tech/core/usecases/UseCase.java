@@ -7,9 +7,10 @@ public interface UseCase<I extends UseCase.UseCaseRequest, O extends UseCase.Use
 
    interface UseCaseRequest{
 
+   }
+   interface UseCaseResponse{
 
    }
-   interface UseCaseResponse{}
 
     Mono<O> execute(I request);
 }

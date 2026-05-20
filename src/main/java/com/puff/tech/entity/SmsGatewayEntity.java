@@ -38,7 +38,6 @@ public class SmsGatewayEntity {
 
     private String testSms;
 
-    // -------- Timestamps --------
     @DateCreated
     private Instant createdAt;
 
